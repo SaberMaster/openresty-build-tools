@@ -10,6 +10,7 @@ OPENSSL_VER=
 LUAROCKS_VER=
 PCRE_VER=
 FORCE=0
+MORE_MODULE=1
 OPENRESTY_PATCHES=
 OPENRESTY_PATCHES_DIR=
 KONG_NGINX_MODULE=master
@@ -78,6 +79,7 @@ main() {
           fatal "Can not specify --openresty-patches and --openresty-patches-dir at the same time"
         fi
 
+
         OPENRESTY_PATCHES=$2
         shift 2
         ;;
@@ -103,6 +105,10 @@ main() {
         ;;
       --debug)
         DEBUG=1
+        shift 1
+        ;;
+      --more-module)
+        MORE_MODULE=1
         shift 1
         ;;
       --work)
@@ -473,6 +479,27 @@ main() {
 
         else
           OPENRESTY_OPTS+=('--with-pcre')
+        fi
+
+        if [ $MORE_MODULE == 1 ]; then
+            OPENRESTY_OPTS+=(
+                '--with-cc="ccache gcc -fdiagnostics-color=always"'
+                '--without-mail_pop3_module'
+                '--without-mail_imap_module'
+                '--without-mail_smtp_module'
+                '--with-http_addition_module'
+                '--with-http_auth_request_module'
+                '--with-http_secure_link_module'
+                '--with-http_random_index_module'
+                '--with-http_gzip_static_module'
+                '--with-http_sub_module'
+                '--with-http_dav_module'
+                '--with-http_flv_module'
+                '--with-http_mp4_module'
+                '--with-http_gunzip_module'
+                '--with-threads'
+#                '--with-dtrace-probes'
+             )
         fi
 
         OPENRESTY_OPTS+=(${NGINX_EXTRA_MODULES[@]})
